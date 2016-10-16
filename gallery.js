@@ -1,7 +1,6 @@
 /*
- * A gallery widget build around H-drum.
+ * A gallery widget built around H-drum.
  */
-
 export default Gallery;
 
 import HDrum from './hdrum.js';

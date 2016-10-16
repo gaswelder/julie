@@ -1,6 +1,6 @@
 /*
- * HDrum is an HRing which takes only such positions that an element
- * is always aligned in the window.
+ * HDrum is an HRing which takes only positions such that an element
+ * is always "aligned" in the window.
  */
 export default HDrum;
 

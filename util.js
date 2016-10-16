@@ -1,3 +1,7 @@
+/*
+ * Auxiliary code
+ */
+
 var performance = window.performance;
 var requestAnimationFrame = window.requestAnimationFrame;
 
@@ -179,38 +183,4 @@ export function onEventRun(element, event, maxDuration, onBegin, onEnd)
 		element.addEventListener(event, start);
 		if(onEnd) onEnd();
 	}
-}
-
-export function pushCSS($obj, values)
-{
-	$obj.each(function()
-	{
-		if(!('cssBackup' in this)) {
-			this.cssBackup = [];
-		}
-		var $this = $(this);
-		var backup = {};
-		for(var k in values) {
-			backup[k] = $this.css(k);
-			$this.css(k, values[k]);
-		}
-
-		this.cssBackup.push(backup);
-	});
-}
-
-export function popCSS($obj)
-{
-	$obj.each(function()
-	{
-		if(!('cssBackup' in this)) {
-			return;
-		}
-		var backup = this.cssBackup.pop();
-		if(!backup) {
-			throw "Unmatched popCSS";
-		}
-		var $this = $(this);
-		$this.css(backup);
-	});
 }
