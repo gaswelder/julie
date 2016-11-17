@@ -5,8 +5,7 @@
 var performance = window.performance;
 var requestAnimationFrame = window.requestAnimationFrame;
 
-if(!performance)
-{
+if (!performance) {
 	performance = {
 		now: function() {
 			return Date.now();
@@ -21,16 +20,15 @@ if(!performance)
 }
 
 export function limit(val, min, max) {
-	if(min > max) {
+	if (min > max) {
 		throw "Invalid arguments given to 'limit'";
 	}
-	if(val < min) val = min;
-	if(val > max) val = max;
+	if (val < min) val = min;
+	if (val > max) val = max;
 	return val;
 }
 
-export function initDrag($obj, onStart, onMove, onEnd)
-{
+export function initDrag($obj, onStart, onMove, onEnd) {
 	var origin = null;
 	var $body = $('body');
 
@@ -46,12 +44,15 @@ export function initDrag($obj, onStart, onMove, onEnd)
 
 	$obj.on("mousedown", function(e) {
 		e.preventDefault();
-		origin = {left: e.pageX, top: e.pageY};
+		origin = {
+			left: e.pageX,
+			top: e.pageY
+		};
 		speed = [0, 0];
 		pos = [e.pageX, e.pageY];
 
 		event = {};
-		if(call(onStart, event) === false) {
+		if (call(onStart, event) === false) {
 			return;
 		}
 		$body.on("mousemove", track);
@@ -79,7 +80,7 @@ export function initDrag($obj, onStart, onMove, onEnd)
 		pos = newPos;
 		t = newT;
 
-		if(speed[0] == 0 && speed[1] == 0) {
+		if (speed[0] == 0 && speed[1] == 0) {
 			return;
 		}
 
@@ -94,7 +95,7 @@ export function initDrag($obj, onStart, onMove, onEnd)
 	}
 
 	function call(f, arg) {
-		if(f) return f(arg);
+		if (f) return f(arg);
 	}
 }
 
@@ -108,10 +109,10 @@ export function animate(from, to, duration, callback) {
 		var prog = (t - t1) / duration;
 		var val = a * prog + b;
 		callback(val);
-		if(prog > 1 && val != to) {
+		if (prog > 1 && val != to) {
 			callback(to);
 		}
-		if(prog < 1) {
+		if (prog < 1) {
 			requestAnimationFrame(next);
 		}
 	}
@@ -119,10 +120,9 @@ export function animate(from, to, duration, callback) {
 	requestAnimationFrame(next);
 };
 
-export function animateFriction(x, v, a, onMove, onEnd)
-{
+export function animateFriction(x, v, a, onMove, onEnd) {
 	var dir = 1;
-	if(v < 0) {
+	if (v < 0) {
 		dir = -1;
 		v = -v;
 	}
@@ -131,10 +131,9 @@ export function animateFriction(x, v, a, onMove, onEnd)
 	requestAnimationFrame(move);
 
 	function move(t1) {
-		if(!t) {
+		if (!t) {
 			t = t1;
-		}
-		else {
+		} else {
 			var dt = t1 - t;
 			t = t1;
 			x += dir * v * dt;
@@ -142,26 +141,24 @@ export function animateFriction(x, v, a, onMove, onEnd)
 			onMove(x);
 		}
 
-		if(v > 0) {
+		if (v > 0) {
 			requestAnimationFrame(move);
-		}
-		else {
+		} else {
 			onEnd();
 		}
 	}
 }
 
 export function normalizeSettings(settings, defaults) {
-	if(!settings) settings = {};
-	for(var k in defaults) {
-		if(k in settings) continue;
+	if (!settings) settings = {};
+	for (var k in defaults) {
+		if (k in settings) continue;
 		settings[k] = defaults[k];
 	}
 	return settings;
 }
 
-export function onEventRun(element, event, maxDuration, onBegin, onEnd)
-{
+export function onEventRun(element, event, maxDuration, onBegin, onEnd) {
 	var stopTimeout;
 	var max = maxDuration;
 	element.addEventListener(event, start, false);
@@ -170,7 +167,7 @@ export function onEventRun(element, event, maxDuration, onBegin, onEnd)
 		element.removeEventListener(event, start, false);
 		element.addEventListener(event, track, false);
 		stopTimeout = setTimeout(stop, max);
-		if(onBegin) onBegin();
+		if (onBegin) onBegin();
 	}
 
 	function track() {
@@ -181,6 +178,6 @@ export function onEventRun(element, event, maxDuration, onBegin, onEnd)
 	function stop() {
 		element.removeEventListener(event, track, false);
 		element.addEventListener(event, start);
-		if(onEnd) onEnd();
+		if (onEnd) onEnd();
 	}
 }

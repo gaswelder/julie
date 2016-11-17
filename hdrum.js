@@ -5,18 +5,19 @@
 export default HDrum;
 
 import HRing from './hring.js';
-import {normalizeSettings} from './util.js';
+import {
+	normalizeSettings
+} from './util.js';
 
 
-function HDrum(container, params)
-{
+function HDrum(container, params) {
 	/*
 	 * Validate the settings.
 	 */
 	params = normalizeSettings(params, {
 		"gravity": "left"
 	});
-	if(["center", "left"].indexOf(params.gravity) == -1) {
+	if (["center", "left"].indexOf(params.gravity) == -1) {
 		throw new Error("Unknown gravity value: " + params.gravity);
 	}
 
@@ -31,8 +32,7 @@ function HDrum(container, params)
 	/*
 	 * Align the ring after the user drags it.
 	 */
-	ring.on("dragend", function()
-	{
+	ring.on("dragend", function() {
 		var L = ring.length();
 		var p = ring.getPos();
 		var x = gravityOffset();
@@ -42,7 +42,7 @@ function HDrum(container, params)
 		 * Find index of the item at gravity position.
 		 */
 		var i = findItem(p + x - turns * L);
-		if(i == -1) {
+		if (i == -1) {
 			throw new Error("Meaningless error message 116");
 		}
 
@@ -52,21 +52,19 @@ function HDrum(container, params)
 		_this.setPos(i + turns * ring.count());
 	});
 
-	function findItem(p)
-	{
+	function findItem(p) {
 		var N = ring.count();
-		for(var i = 0; i < N; i++) {
+		for (var i = 0; i < N; i++) {
 			var item = ring.getItem(i);
-			if(item.pos <= p && p < item.pos + item.width) {
+			if (item.pos <= p && p < item.pos + item.width) {
 				return i;
 			}
 		}
 		return -1;
 	}
 
-	this.setPos = function(i)
-	{
-		if(!ring.enabled()) {
+	this.setPos = function(i) {
+		if (!ring.enabled()) {
 			return;
 		}
 
@@ -82,7 +80,7 @@ function HDrum(container, params)
 		var j = i - n * N;
 
 		var item = ring.getItem(j);
-		if(!item) {
+		if (!item) {
 			throw new Error("Meaningless error message 2354");
 		}
 
@@ -92,12 +90,12 @@ function HDrum(container, params)
 		var L = ring.length();
 		var p = ring.getPos();
 
-		switch(params.gravity) {
+		switch (params.gravity) {
 			case "left":
 				p = L * n + item.pos;
 				break;
 			case "center":
-				p = L * n + item.pos - 1/2 * (frameWidth() - item.width);
+				p = L * n + item.pos - 1 / 2 * (frameWidth() - item.width);
 				break;
 			default:
 				throw "Invalid gravity";
@@ -110,9 +108,8 @@ function HDrum(container, params)
 		return pos;
 	};
 
-	function gravityOffset()
-	{
-		switch(params.gravity) {
+	function gravityOffset() {
+		switch (params.gravity) {
 			case "center":
 				return frameWidth() / 2;
 			case "left":

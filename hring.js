@@ -12,8 +12,7 @@ import {
 	animateFriction
 } from './util.js';
 
-function HRing(container)
-{
+function HRing(container) {
 	// Current position
 	var pos = 0;
 
@@ -39,28 +38,26 @@ function HRing(container)
 	onEventRun(window, "resize", 500, update);
 	update();
 
-	function update()
-	{
+	function update() {
 		/*
 		 * Determine whether there is enough elements for the ring.
 		 */
 		refreshCache();
 		var enough = maxItemWidth + frameWidth <= totalLength;
 
-		if(!active) {
-			if(enough) {
+		if (!active) {
+			if (enough) {
 				active = true;
 				construct();
 			}
-		}
-		else {
-			if(!enough) {
+		} else {
+			if (!enough) {
 				active = false;
 				deconstruct();
 			}
 		}
 
-		if(active) {
+		if (active) {
 			setPos(0);
 		}
 	}
@@ -70,7 +67,7 @@ function HRing(container)
 	 */
 	initDrag($container,
 		function(e) {
-			if(!active) return false;
+			if (!active) return false;
 			e.dragPos = pos;
 		},
 		function(e) {
@@ -100,7 +97,7 @@ function HRing(container)
 	 * Sets new position.
 	 */
 	this.setPos = function(newPos) {
-		if(!active) return;
+		if (!active) return;
 		animate(pos, newPos, 300, function(p) {
 			setPos(p);
 		});
@@ -110,7 +107,7 @@ function HRing(container)
 	 * Returns current position.
 	 */
 	this.getPos = function() {
-		if(!active) return undefined;
+		if (!active) return undefined;
 		return pos;
 	};
 
@@ -132,8 +129,7 @@ function HRing(container)
 
 	//
 
-	function refreshCache()
-	{
+	function refreshCache() {
 		frameWidth = $container.width();
 
 		items = [];
@@ -153,14 +149,13 @@ function HRing(container)
 			});
 			totalLength += w;
 
-			if(h > maxItemHeight) maxItemHeight = h;
-			if(w > maxItemWidth) maxItemWidth = w;
+			if (h > maxItemHeight) maxItemHeight = h;
+			if (w > maxItemWidth) maxItemWidth = w;
 		});
 
 	}
 
-	function construct()
-	{
+	function construct() {
 		$container.css({
 			"position": "relative",
 			"height": maxItemHeight + "px",
@@ -173,8 +168,7 @@ function HRing(container)
 		});
 	}
 
-	function deconstruct()
-	{
+	function deconstruct() {
 		$container.children().css({
 			"position": "",
 			"display": "",
@@ -187,8 +181,7 @@ function HRing(container)
 		});
 	}
 
-	function setPos(newPos)
-	{
+	function setPos(newPos) {
 		pos = newPos;
 
 		/*
@@ -197,21 +190,21 @@ function HRing(container)
 		newPos = wrap(newPos, totalLength);
 		var i = 0;
 		var x;
-		for(i = 0; i < items.length; i++) {
+		for (i = 0; i < items.length; i++) {
 			var item = items[i];
-			if(item.pos <= newPos && newPos < item.pos + item.width) {
+			if (item.pos <= newPos && newPos < item.pos + item.width) {
 				x = item.pos - newPos;
 				break;
 			}
 		}
-		if(i == items.length) {
+		if (i == items.length) {
 			throw "Oops";
 		}
 
 		/*
 		 * Fill the frame with items starting from the one found.
 		 */
-		while(x < frameWidth) {
+		while (x < frameWidth) {
 			item = getItem(i++);
 			item.$e.css("display", "block");
 			item.$e.css("left", x + "px");
@@ -221,9 +214,9 @@ function HRing(container)
 		/*
 		 * Move the rest of the items away.
 		 */
-		while(i < 2*items.length) {
+		while (i < 2 * items.length) {
 			item = getItem(i);
-			if(item.pos <= newPos && newPos < item.pos + item.width) {
+			if (item.pos <= newPos && newPos < item.pos + item.width) {
 				break;
 			}
 			item.$e.css({
@@ -245,15 +238,15 @@ function HRing(container)
 	}
 
 	function wrap(val, range) {
-		if(range < 0) {
+		if (range < 0) {
 			throw "Negative range given to 'wrap'";
 		}
-		if(range == 0) {
+		if (range == 0) {
 			return 0;
 		}
 
-		while(val < 0) val += range;
-		while(val >= range) val -= range;
+		while (val < 0) val += range;
+		while (val >= range) val -= range;
 		return val;
 	}
 }

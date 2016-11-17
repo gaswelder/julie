@@ -4,10 +4,12 @@ export default HScroll;
  * horizontally inside the container.
  */
 
-import {limit, initDrag} from './util.js';
+import {
+	limit,
+	initDrag
+} from './util.js';
 
-function HScroll($container)
-{
+function HScroll($container) {
 	var $children = $container.children();
 
 	var totalWidth = 0;
@@ -22,7 +24,7 @@ function HScroll($container)
 			"left": totalWidth + "px"
 		});
 		totalWidth += w;
-		if(h > maxHeight) maxHeight = h;
+		if (h > maxHeight) maxHeight = h;
 	});
 
 	var $film = $('<div></div>');
@@ -46,6 +48,7 @@ function HScroll($container)
 	function animationOn() {
 		$film.css("transition", "left 0.3s");
 	}
+
 	function animationOff() {
 		$film.css("transition", "none");
 	}

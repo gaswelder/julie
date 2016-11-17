@@ -4,10 +4,11 @@
 export default Gallery;
 
 import HDrum from './hdrum.js';
-import {normalizeSettings} from './util.js';
+import {
+	normalizeSettings
+} from './util.js';
 
-function Gallery(container, settings)
-{
+function Gallery(container, settings) {
 	settings = normalizeSettings(settings, {
 		autoChangePeriod: undefined,
 		leftRight: false
@@ -25,31 +26,34 @@ function Gallery(container, settings)
 	/*
 	 * Left-right buttons.
 	 */
-	if(settings.leftRight) {
+	if (settings.leftRight) {
 		initLeftRight($container, drum);
 	}
 
 	/*
 	 * Automatic rotation.
 	 */
-	if(settings.autoChangePeriod) {
+	if (settings.autoChangePeriod) {
 		initAutoChange($container, drum, settings.autoChangePeriod);
 	}
 }
 
-function initAutoChange($container, drum, period)
-{
+function initAutoChange($container, drum, period) {
 	var block = false;
 	var timer = setInterval(function() {
-		if(block) return;
+		if (block) return;
 		drum.setPos(drum.getPos() + 1);
 	}, period);
 
 	/*
 	 * Pause the autorotation on mouse hover.
 	 */
-	$container.on("mouseenter", function() { block = true; });
-	$container.on("mouseleave", function() { block = false; });
+	$container.on("mouseenter", function() {
+		block = true;
+	});
+	$container.on("mouseleave", function() {
+		block = false;
+	});
 
 	/*
 	 * Cancel the autorotation completely after any manual
@@ -60,12 +64,11 @@ function initAutoChange($container, drum, period)
 	});
 }
 
-function initLeftRight($container, drum)
-{
-	var $c = $('<div class="left-right">'
-		+ '<div class="btn left"></div>'
-		+ '<div class="btn right"></div>'
-		+ '</div>');
+function initLeftRight($container, drum) {
+	var $c = $('<div class="left-right">' +
+		'<div class="btn left"></div>' +
+		'<div class="btn right"></div>' +
+		'</div>');
 	var $left = $c.find('.left');
 	var $right = $c.find('.right');
 

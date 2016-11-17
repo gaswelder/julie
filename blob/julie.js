@@ -8,8 +8,7 @@
 	var performance = window.performance;
 	var requestAnimationFrame = window.requestAnimationFrame;
 
-	if(!performance)
-	{
+	if (!performance) {
 		performance = {
 			now: function() {
 				return Date.now();
@@ -23,8 +22,7 @@
 		};
 	}
 
-	function initDrag($obj, onStart, onMove, onEnd)
-	{
+	function initDrag($obj, onStart, onMove, onEnd) {
 		var origin = null;
 		var $body = $('body');
 
@@ -40,12 +38,15 @@
 
 		$obj.on("mousedown", function(e) {
 			e.preventDefault();
-			origin = {left: e.pageX, top: e.pageY};
+			origin = {
+				left: e.pageX,
+				top: e.pageY
+			};
 			speed = [0, 0];
 			pos = [e.pageX, e.pageY];
 
 			event = {};
-			if(call(onStart, event) === false) {
+			if (call(onStart, event) === false) {
 				return;
 			}
 			$body.on("mousemove", track);
@@ -73,7 +74,7 @@
 			pos = newPos;
 			t = newT;
 
-			if(speed[0] == 0 && speed[1] == 0) {
+			if (speed[0] == 0 && speed[1] == 0) {
 				return;
 			}
 
@@ -88,7 +89,7 @@
 		}
 
 		function call(f, arg) {
-			if(f) return f(arg);
+			if (f) return f(arg);
 		}
 	}
 
@@ -102,10 +103,10 @@
 			var prog = (t - t1) / duration;
 			var val = a * prog + b;
 			callback(val);
-			if(prog > 1 && val != to) {
+			if (prog > 1 && val != to) {
 				callback(to);
 			}
-			if(prog < 1) {
+			if (prog < 1) {
 				requestAnimationFrame(next);
 			}
 		}
@@ -113,10 +114,9 @@
 		requestAnimationFrame(next);
 	};
 
-	function animateFriction(x, v, a, onMove, onEnd)
-	{
+	function animateFriction(x, v, a, onMove, onEnd) {
 		var dir = 1;
-		if(v < 0) {
+		if (v < 0) {
 			dir = -1;
 			v = -v;
 		}
@@ -125,10 +125,9 @@
 		requestAnimationFrame(move);
 
 		function move(t1) {
-			if(!t) {
+			if (!t) {
 				t = t1;
-			}
-			else {
+			} else {
 				var dt = t1 - t;
 				t = t1;
 				x += dir * v * dt;
@@ -136,26 +135,24 @@
 				onMove(x);
 			}
 
-			if(v > 0) {
+			if (v > 0) {
 				requestAnimationFrame(move);
-			}
-			else {
+			} else {
 				onEnd();
 			}
 		}
 	}
 
 	function normalizeSettings(settings, defaults) {
-		if(!settings) settings = {};
-		for(var k in defaults) {
-			if(k in settings) continue;
+		if (!settings) settings = {};
+		for (var k in defaults) {
+			if (k in settings) continue;
 			settings[k] = defaults[k];
 		}
 		return settings;
 	}
 
-	function onEventRun(element, event, maxDuration, onBegin, onEnd)
-	{
+	function onEventRun(element, event, maxDuration, onBegin, onEnd) {
 		var stopTimeout;
 		var max = maxDuration;
 		element.addEventListener(event, start, false);
@@ -164,7 +161,7 @@
 			element.removeEventListener(event, start, false);
 			element.addEventListener(event, track, false);
 			stopTimeout = setTimeout(stop, max);
-			if(onBegin) onBegin();
+			if (onBegin) onBegin();
 		}
 
 		function track() {
@@ -175,12 +172,11 @@
 		function stop() {
 			element.removeEventListener(event, track, false);
 			element.addEventListener(event, start);
-			if(onEnd) onEnd();
+			if (onEnd) onEnd();
 		}
 	}
 
-	function HRing(container)
-	{
+	function HRing(container) {
 		// Current position
 		var pos = 0;
 
@@ -206,28 +202,26 @@
 		onEventRun(window, "resize", 500, update);
 		update();
 
-		function update()
-		{
+		function update() {
 			/*
 			 * Determine whether there is enough elements for the ring.
 			 */
 			refreshCache();
 			var enough = maxItemWidth + frameWidth <= totalLength;
 
-			if(!active) {
-				if(enough) {
+			if (!active) {
+				if (enough) {
 					active = true;
 					construct();
 				}
-			}
-			else {
-				if(!enough) {
+			} else {
+				if (!enough) {
 					active = false;
 					deconstruct();
 				}
 			}
 
-			if(active) {
+			if (active) {
 				setPos(0);
 			}
 		}
@@ -237,7 +231,7 @@
 		 */
 		initDrag($container,
 			function(e) {
-				if(!active) return false;
+				if (!active) return false;
 				e.dragPos = pos;
 			},
 			function(e) {
@@ -267,7 +261,7 @@
 		 * Sets new position.
 		 */
 		this.setPos = function(newPos) {
-			if(!active) return;
+			if (!active) return;
 			animate(pos, newPos, 300, function(p) {
 				setPos(p);
 			});
@@ -277,7 +271,7 @@
 		 * Returns current position.
 		 */
 		this.getPos = function() {
-			if(!active) return undefined;
+			if (!active) return undefined;
 			return pos;
 		};
 
@@ -299,8 +293,7 @@
 
 		//
 
-		function refreshCache()
-		{
+		function refreshCache() {
 			frameWidth = $container.width();
 
 			items = [];
@@ -320,14 +313,13 @@
 				});
 				totalLength += w;
 
-				if(h > maxItemHeight) maxItemHeight = h;
-				if(w > maxItemWidth) maxItemWidth = w;
+				if (h > maxItemHeight) maxItemHeight = h;
+				if (w > maxItemWidth) maxItemWidth = w;
 			});
 
 		}
 
-		function construct()
-		{
+		function construct() {
 			$container.css({
 				"position": "relative",
 				"height": maxItemHeight + "px",
@@ -340,8 +332,7 @@
 			});
 		}
 
-		function deconstruct()
-		{
+		function deconstruct() {
 			$container.children().css({
 				"position": "",
 				"display": "",
@@ -354,8 +345,7 @@
 			});
 		}
 
-		function setPos(newPos)
-		{
+		function setPos(newPos) {
 			pos = newPos;
 
 			/*
@@ -364,21 +354,21 @@
 			newPos = wrap(newPos, totalLength);
 			var i = 0;
 			var x;
-			for(i = 0; i < items.length; i++) {
+			for (i = 0; i < items.length; i++) {
 				var item = items[i];
-				if(item.pos <= newPos && newPos < item.pos + item.width) {
+				if (item.pos <= newPos && newPos < item.pos + item.width) {
 					x = item.pos - newPos;
 					break;
 				}
 			}
-			if(i == items.length) {
+			if (i == items.length) {
 				throw "Oops";
 			}
 
 			/*
 			 * Fill the frame with items starting from the one found.
 			 */
-			while(x < frameWidth) {
+			while (x < frameWidth) {
 				item = getItem(i++);
 				item.$e.css("display", "block");
 				item.$e.css("left", x + "px");
@@ -388,9 +378,9 @@
 			/*
 			 * Move the rest of the items away.
 			 */
-			while(i < 2*items.length) {
+			while (i < 2 * items.length) {
 				item = getItem(i);
-				if(item.pos <= newPos && newPos < item.pos + item.width) {
+				if (item.pos <= newPos && newPos < item.pos + item.width) {
 					break;
 				}
 				item.$e.css({
@@ -412,28 +402,27 @@
 		}
 
 		function wrap(val, range) {
-			if(range < 0) {
+			if (range < 0) {
 				throw "Negative range given to 'wrap'";
 			}
-			if(range == 0) {
+			if (range == 0) {
 				return 0;
 			}
 
-			while(val < 0) val += range;
-			while(val >= range) val -= range;
+			while (val < 0) val += range;
+			while (val >= range) val -= range;
 			return val;
 		}
 	}
 
-	function HDrum(container, params)
-	{
+	function HDrum(container, params) {
 		/*
 		 * Validate the settings.
 		 */
 		params = normalizeSettings(params, {
 			"gravity": "left"
 		});
-		if(["center", "left"].indexOf(params.gravity) == -1) {
+		if (["center", "left"].indexOf(params.gravity) == -1) {
 			throw new Error("Unknown gravity value: " + params.gravity);
 		}
 
@@ -448,8 +437,7 @@
 		/*
 		 * Align the ring after the user drags it.
 		 */
-		ring.on("dragend", function()
-		{
+		ring.on("dragend", function() {
 			var L = ring.length();
 			var p = ring.getPos();
 			var x = gravityOffset();
@@ -459,7 +447,7 @@
 			 * Find index of the item at gravity position.
 			 */
 			var i = findItem(p + x - turns * L);
-			if(i == -1) {
+			if (i == -1) {
 				throw new Error("Meaningless error message 116");
 			}
 
@@ -469,21 +457,19 @@
 			_this.setPos(i + turns * ring.count());
 		});
 
-		function findItem(p)
-		{
+		function findItem(p) {
 			var N = ring.count();
-			for(var i = 0; i < N; i++) {
+			for (var i = 0; i < N; i++) {
 				var item = ring.getItem(i);
-				if(item.pos <= p && p < item.pos + item.width) {
+				if (item.pos <= p && p < item.pos + item.width) {
 					return i;
 				}
 			}
 			return -1;
 		}
 
-		this.setPos = function(i)
-		{
-			if(!ring.enabled()) {
+		this.setPos = function(i) {
+			if (!ring.enabled()) {
 				return;
 			}
 
@@ -499,7 +485,7 @@
 			var j = i - n * N;
 
 			var item = ring.getItem(j);
-			if(!item) {
+			if (!item) {
 				throw new Error("Meaningless error message 2354");
 			}
 
@@ -509,12 +495,12 @@
 			var L = ring.length();
 			var p = ring.getPos();
 
-			switch(params.gravity) {
+			switch (params.gravity) {
 				case "left":
 					p = L * n + item.pos;
 					break;
 				case "center":
-					p = L * n + item.pos - 1/2 * (frameWidth() - item.width);
+					p = L * n + item.pos - 1 / 2 * (frameWidth() - item.width);
 					break;
 				default:
 					throw "Invalid gravity";
@@ -527,9 +513,8 @@
 			return pos;
 		};
 
-		function gravityOffset()
-		{
-			switch(params.gravity) {
+		function gravityOffset() {
+			switch (params.gravity) {
 				case "center":
 					return frameWidth() / 2;
 				case "left":
@@ -546,8 +531,7 @@
 		this.setPos(0);
 	}
 
-	function Gallery(container, settings)
-	{
+	function Gallery(container, settings) {
 		settings = normalizeSettings(settings, {
 			autoChangePeriod: undefined,
 			leftRight: false
@@ -565,31 +549,34 @@
 		/*
 		 * Left-right buttons.
 		 */
-		if(settings.leftRight) {
+		if (settings.leftRight) {
 			initLeftRight($container, drum);
 		}
 
 		/*
 		 * Automatic rotation.
 		 */
-		if(settings.autoChangePeriod) {
+		if (settings.autoChangePeriod) {
 			initAutoChange($container, drum, settings.autoChangePeriod);
 		}
 	}
 
-	function initAutoChange($container, drum, period)
-	{
+	function initAutoChange($container, drum, period) {
 		var block = false;
 		var timer = setInterval(function() {
-			if(block) return;
+			if (block) return;
 			drum.setPos(drum.getPos() + 1);
 		}, period);
 
 		/*
 		 * Pause the autorotation on mouse hover.
 		 */
-		$container.on("mouseenter", function() { block = true; });
-		$container.on("mouseleave", function() { block = false; });
+		$container.on("mouseenter", function() {
+			block = true;
+		});
+		$container.on("mouseleave", function() {
+			block = false;
+		});
 
 		/*
 		 * Cancel the autorotation completely after any manual
@@ -600,12 +587,11 @@
 		});
 	}
 
-	function initLeftRight($container, drum)
-	{
-		var $c = $('<div class="left-right">'
-			+ '<div class="btn left"></div>'
-			+ '<div class="btn right"></div>'
-			+ '</div>');
+	function initLeftRight($container, drum) {
+		var $c = $('<div class="left-right">' +
+			'<div class="btn left"></div>' +
+			'<div class="btn right"></div>' +
+			'</div>');
 		var $left = $c.find('.left');
 		var $right = $c.find('.right');
 
