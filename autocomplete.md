@@ -80,11 +80,3 @@ autocomplete(input,
 	}
 );
 ```
-
-## To do
-
-Close the list when the user leaves the input.
-
-There may be not enough space for the list between the input and the
-page border. A scrollbar could be added to the list, or the list could
-be placed differently in that case.
