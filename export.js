@@ -1,11 +1,12 @@
 /*
- * This is the file used to generate the packed blob including
- * the most useful widgets for those who don't want to bother with
- * compiling.
+ * This is the file used to generate the blob
+ * with the most useful widgets
  */
 
-import Gallery from "./gallery.js"
+import Gallery from "./gallery.js";
+import Tabs from "./tabs.js";
 
-var G = {};
-window.Julie = G;
-G.Gallery = Gallery;
+window.Julie = {
+	Gallery: Gallery,
+	Tabs: Tabs
+};

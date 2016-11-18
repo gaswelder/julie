@@ -46,6 +46,7 @@ The high-level widgets include:
 
 * [Gallery](gallery.md)
 * [Autocomplete](autocomplete.md)
+* [Tabs](tabs.md)
 
 There are more primitive objects that are used to build the widgets
 and may be useful by themselves:
