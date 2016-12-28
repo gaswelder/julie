@@ -1,4 +1,4 @@
-all: blob/julie fmt
+all: fmt blob/julie
 
 fmt:
 	js-beautify -rtn *.js
