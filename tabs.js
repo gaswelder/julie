@@ -1,12 +1,21 @@
 export default Tabs;
 
+import {
+	normalizeSettings
+} from './util.js';
+
 var ids = 0;
 
 /*
  * Tabbed widget constructor. 'container' is a DOM
  * element which will be converted to the widget.
  */
-function Tabs(container) {
+function Tabs(container, settings) {
+	settings = normalizeSettings(settings, {
+		sectionSelector: 'section',
+		headerSelector: 'h1'
+	});
+
 	var _this = this;
 	/*
 	 * Page "bundles".
@@ -30,27 +39,21 @@ function Tabs(container) {
 	var $headsContainer = $('<div class="w-tabs-heads"></div>');
 	var $bodiesContainer = $('<div class="w-tabs-bodies"></div>');
 
-	init($container);
-
 	/*
 	 * Construct the widget.
 	 */
-	function init($container) {
-		parseContents($container);
-		$container.append($headsContainer).append($bodiesContainer);
-		initEvents();
-		setCurrentPage(0);
-	}
+	parseContents($container, settings.sectionSelector, settings.headerSelector);
+	$container.append($headsContainer).append($bodiesContainer);
+	initEvents();
+	setCurrentPage(0);
 
 	/*
 	 * Parse the existing markup into pages and tabs.
-	 * Assumed: each page is a 'section' element, with an 'h1' element
-	 * inside.
 	 */
-	function parseContents($container) {
-		var $sections = $container.children('section');
+	function parseContents($container, sectionSel, headerSel) {
+		var $sections = $container.children(sectionSel);
 		$sections.each(function() {
-			var $header = $(this).children('h1').eq(0);
+			var $header = $(this).children(headerSel).eq(0);
 			addPage($header.html(), this);
 		});
 	}

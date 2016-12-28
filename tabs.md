@@ -5,14 +5,26 @@
 ```js
 import Tabs from "julie/tabs.js";
 
-var tabs = new Tabs(container);
+var tabs = new Tabs(container, settings);
 ```
 
 The container must be a reference to a DOM element. If the container
 has content, it is supposed to be organized into sections with section
-elements, each having an h1 element for the title. The sections will be
-converted into tab pages with headers used as tab titles. It is also
+elements, each having a header element for the title. The sections will
+be converted into tab pages with headers used as tab titles. It is also
 possible to add pages from the script.
+
+
+## Settings
+
+* `sectionSelector` (default: `'section'`)
+
+	Selector that will be used on the container to obtain section
+	elements.
+
+* `headerSelector` (default: `'h1'`)
+
+	Selector that will be used on each section to obtain its heading.
 
 
 ## Functions
