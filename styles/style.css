@@ -1,0 +1,40 @@
+.w-tabs {
+	margin-top: 1em;
+}
+
+.w-tabs-head {
+	display: inline-block;
+	text-decoration: none;
+	padding: 6px;
+	margin-right: 2px;
+	background: #eee;
+	color: #333;
+}
+
+.w-tabs-head.current {
+	color: white;
+	background-color: #669;
+}
+
+.w-tabs-bodies {
+	width: 30em;
+	border: 1px solid #eee;
+}
+
+
+.w-layer {
+	width: 200px;
+	height: 200px;
+	background: teal;
+	opacity: 0.3;
+	transition-property: opacity;
+	transition-duration: 0.5s;
+	z-index: 1;
+}
+
+.w-layer.focus {
+	background: gold;
+	opacity: 1.0;
+	transition-duration: 0s;
+	z-index: 2;
+}
