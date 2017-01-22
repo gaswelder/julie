@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="jquery.js"></script>
+<script src="../blob/julie.js"></script>
+<link rel="stylesheet" href="../styles/style.css">
+</head>
+<body>
+<script>
+
+var foo = new Julie.Layer('foo');
+var bar = new Julie.Layer('bar');
+
+foo.on('focus', function() {
+	console.log('foo now is in front');
+});
+
+bar.on('focus', function() {
+	console.log('bar now is in front');
+});
+
+</script>
+</body>
+</html>

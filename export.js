@@ -5,8 +5,10 @@
 
 import Gallery from "./gallery.js";
 import Tabs from "./tabs.js";
+import Layer from './layer.js';
 
 window.Julie = {
 	Gallery: Gallery,
-	Tabs: Tabs
+	Tabs: Tabs,
+	Layer: Layer
 };
