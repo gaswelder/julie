@@ -5,7 +5,7 @@
 var performance = window.performance;
 var requestAnimationFrame = window.requestAnimationFrame;
 
-if (!performance) {
+if (!performance || !performance.now) {
 	performance = {
 		now: function() {
 			return Date.now();
