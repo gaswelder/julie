@@ -42,8 +42,9 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 		e.preventDefault();
 	});
 
-	$obj.on("mousedown", function(e) {
-		e.preventDefault();
+	$obj.on("mousedown", begin);
+
+	function begin(e) {
 		origin = {
 			left: e.pageX,
 			top: e.pageY
@@ -52,14 +53,16 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 		pos = [e.pageX, e.pageY];
 
 		event = {};
-		if (call(onStart, event) === false) {
+		if (onStart && onStart(event) === false) {
 			return;
 		}
+		e.preventDefault();
 		$body.on("mousemove", track);
 		$body.on("mouseup mouseleave", end);
-	});
+	}
 
-	function end() {
+	function end(e) {
+		e.preventDefault();
 		event.speed = speed;
 		call(onEnd, event);
 		delete event.speed;
