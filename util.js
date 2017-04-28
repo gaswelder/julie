@@ -34,10 +34,19 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 
 	var t = performance.now();
 	var pos = [0, 0];
-	var speed = [0, 0];
 
-	var event;
+	var event = {
+		// 'offset' tells how long from the starting point
+		// the pointer has travelled so far.
+		offset: {
+			left: 0,
+			top: 0
+		},
+		// Current speed (x, y) in pixels per millisecond.
+		speed: [0, 0]
+	};
 
+	// Disable native dragstart event.
 	$obj.on("dragstart", function(e) {
 		e.preventDefault();
 	});
@@ -45,27 +54,27 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 	$obj.on("mousedown", begin);
 
 	function begin(e) {
+		event.speed = [0, 0];
+		event.offset.left = 0;
+		event.offset.top = 0;
+		if (onStart && onStart(event) === false) {
+			return;
+		}
+
+		e.preventDefault();
+
 		origin = {
 			left: e.pageX,
 			top: e.pageY
 		};
-		speed = [0, 0];
 		pos = [e.pageX, e.pageY];
 
-		event = {};
-		if (onStart && onStart(event) === false) {
-			return;
-		}
-		e.preventDefault();
 		$body.on("mousemove", track);
 		$body.on("mouseup mouseleave", end);
 	}
 
 	function end(e) {
-		e.preventDefault();
-		event.speed = speed;
 		call(onEnd, event);
-		delete event.speed;
 		$body.off("mousemove", track);
 		$body.off("mouseup mouseleave", end);
 	}
@@ -73,9 +82,12 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 	function track(e) {
 		var newPos = [e.pageX, e.pageY];
 		var newT = performance.now();
-
 		var dt = newT - t;
-		speed = [
+		if (!dt) {
+			return;
+		}
+
+		event.speed = [
 			(newPos[0] - pos[0]) / dt,
 			(newPos[1] - pos[1]) / dt
 		];
@@ -83,18 +95,14 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 		pos = newPos;
 		t = newT;
 
-		if (speed[0] == 0 && speed[1] == 0) {
+		if (event.speed[0] == 0 && event.speed[1] == 0) {
 			return;
 		}
 
-		var offset = {
-			left: e.pageX - origin.left,
-			top: e.pageY - origin.top
-		};
+		event.offset.left = e.pageX - origin.left;
+		event.offset.top = e.pageY - origin.top;
 
-		event.offset = offset;
-		call(onMove, event);
-		delete event.offset;
+		if (onMove) onMove(event);
 	}
 
 	function call(f, arg) {
