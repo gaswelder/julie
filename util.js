@@ -158,26 +158,14 @@ export function normalizeSettings(settings, defaults) {
 	return settings;
 }
 
-export function onEventRun(element, event, maxDuration, onBegin, onEnd) {
-	var stopTimeout;
-	var max = maxDuration;
-	element.addEventListener(event, start, false);
+export function debounce(func, delay) {
+	var timeout = null;
 
-	function start() {
-		element.removeEventListener(event, start, false);
-		element.addEventListener(event, track, false);
-		stopTimeout = setTimeout(stop, max);
-		if (onBegin) onBegin();
-	}
-
-	function track() {
-		clearTimeout(stopTimeout);
-		stopTimeout = setTimeout(stop, max);
-	}
-
-	function stop() {
-		element.removeEventListener(event, track, false);
-		element.addEventListener(event, start);
-		if (onEnd) onEnd();
-	}
-}
+	return function() {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = null;
+		}
+		timeout = setTimeout(f, delay);
+	};
+};

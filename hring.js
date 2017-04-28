@@ -7,7 +7,7 @@ export default HRing
 import {
 	limit,
 	initDrag,
-	onEventRun,
+	debounce,
 	animate,
 	animateFriction
 } from './util.js';
@@ -35,7 +35,7 @@ function HRing(container) {
 	/*
 	 * Disable or enable the widget, if needed, after window resizes.
 	 */
-	onEventRun(window, "resize", 500, update);
+	window.addEventListener('resize', debounce(update, 500), false);
 	update();
 
 	function update() {
