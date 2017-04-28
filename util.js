@@ -60,7 +60,18 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 		}
 	});
 
-	$obj.on("mousedown", begin);
+	var beginEvent, trackEvent, endEvent;
+	if ("ontouchstart" in document.body) {
+		beginEvent = "touchstart";
+		trackEvent = "touchmove";
+		endEvent = "touchend";
+	} else {
+		beginEvent = "mousedown";
+		trackEvent = "mousemove";
+		endEvent = "mouseup mouseleave";
+	}
+
+	$obj.on(beginEvent, begin);
 
 	function begin(e) {
 		event.speed = [0, 0];
@@ -72,24 +83,31 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 
 		e.preventDefault();
 
-		origin = {
-			left: e.pageX,
-			top: e.pageY
-		};
-		pos = [e.pageX, e.pageY];
+		pos = [
+			e.pageX || e.originalEvent.touches[0].pageX,
+			e.pageY || e.originalEvent.touches[0].pageY
+		];
 
-		$body.on("mousemove", track);
-		$body.on("mouseup mouseleave", end);
+		origin = {
+			left: pos[0],
+			top: pos[1]
+		};
+
+		$body.on(trackEvent, track);
+		$body.on(endEvent, end);
 	}
 
 	function end(e) {
 		call(onEnd, event);
-		$body.off("mousemove", track);
-		$body.off("mouseup mouseleave", end);
+		$body.off(trackEvent, track);
+		$body.off(endEvent, end);
 	}
 
 	function track(e) {
-		var newPos = [e.pageX, e.pageY];
+		var newPos = [
+			e.pageX || e.originalEvent.touches[0].pageX,
+			e.pageY || e.originalEvent.touches[0].pageY
+		];
 		var newT = performance.now();
 		var dt = newT - t;
 		if (!dt) {
@@ -108,8 +126,8 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 			return;
 		}
 
-		event.offset.left = e.pageX - origin.left;
-		event.offset.top = e.pageY - origin.top;
+		event.offset.left = pos[0] - origin.left;
+		event.offset.top = pos[1] - origin.top;
 
 		if (onMove) onMove(event);
 	}
