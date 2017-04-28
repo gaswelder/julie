@@ -51,6 +51,15 @@ export function initDrag($obj, onStart, onMove, onEnd) {
 		e.preventDefault();
 	});
 
+	// At the end of our dragging a "click" event is emitted
+	// along with the "mouseup" event. If we have been dragging
+	// right now, that click event should be suppressed.
+	$obj.on("click", function(e) {
+		if (event.offset.left != 0 || event.offset.top != 0) {
+			e.preventDefault();
+		}
+	});
+
 	$obj.on("mousedown", begin);
 
 	function begin(e) {
