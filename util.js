@@ -204,6 +204,6 @@ export function debounce(func, delay) {
 			clearTimeout(timeout);
 			timeout = null;
 		}
-		timeout = setTimeout(f, delay);
+		timeout = setTimeout(func, delay);
 	};
 };
