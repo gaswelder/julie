@@ -3,10 +3,10 @@
  * with the most useful widgets
  */
 
-import Gallery from "./gallery.js";
-import Tabs from "./tabs.js";
-import Layer from './layer.js';
-import autocomplete from './autocomplete.js';
+import Gallery from "./src/gallery.js";
+import Tabs from "./src/tabs.js";
+import Layer from './src/layer.js';
+import autocomplete from './src/autocomplete.js';
 
 window.Julie = {
 	Gallery: Gallery,
