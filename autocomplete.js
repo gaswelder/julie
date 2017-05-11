@@ -1,51 +1,144 @@
 export default autocomplete;
 
+import {
+	limit
+} from './util.js';
+
+function esc(s) {
+	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 /*
  * optionsFunction is a function taking entered term and returning
  * corresponding array of suggestions.
  */
-function autocomplete(input, optionsFunc, onAccept) {
-	var $input = $(input);
-	var $list = buildList($input);
-	var list = new List($input, $list, optionsFunc, onAccept);
-	initInputEvents(list);
-	initKeyboardEvents(list);
-	initMouseEvents(list);
-}
+function autocomplete(input, getOptions) {
 
-/*
- * A structure for the generated drop-down list.
- */
-function List($input, $list, optionsFunc, acceptCallback) {
-	// The input
-	this.$input = $input;
+	// Disable the browser's autocompletion
+	input.autocomplete = 'off';
 
-	// The UL element we show below the input
-	this.$list = $list;
+	// Current list of options returned by getOptions
+	var options = [];
 
-	// Suggestions function and onAccept function
-	this.func = optionsFunc;
-	this.acceptCallback = acceptCallback;
+	// Index of the option selected by the user with keyboard or mouse
+	var selectionIndex = -1;
 
-	// Array of currently shown suggestions
-	this.contents = [];
-	this.contexts = [];
 
-	// Currently highlighted suggestion
-	this.selection = -1;
+	var listContainer = document.createElement('div');
+	listContainer.className = 'ju autocomplete';
+	listContainer.style.position = 'absolute';
 
-	// Previous value of the input
-	this.prevValue = '';
-}
+	var list = document.createElement('ul');
+	listContainer.appendChild(list);
+	document.body.appendChild(listContainer);
 
-/*
- * Takes an input and returns the list for it.
- */
-function buildList($input) {
+
+	input.addEventListener('input', function() {
+		options = []
+		selectionIndex = -1;
+		listContainer.style.display = 'none';
+
+		if (this.value == '') {
+			return;
+		}
+
+		getOptions(this.value, function(newOptions) {
+			options = newOptions;
+			if (options.length == 0) {
+				return;
+			}
+			renderOptions();
+			alignList();
+		});
+	});
+
+	function renderOptions() {
+		var html = '';
+		for (var i = 0; i < options.length; i++) {
+			html += '<li';
+			if (i == selectionIndex) {
+				html += ' class="selected"';
+			}
+			html += ' data-index="' + i + '"';
+			html += '>' + esc(options[i]) + '</li>';
+		}
+		list.innerHTML = html;
+		listContainer.style.display = 'block';
+	}
+
+	function alignList() {
+		listContainer.style.left = input.offsetLeft + 'px';
+		listContainer.style.top = input.offsetTop + input.offsetHeight + 'px';
+		listContainer.style.width = input.offsetWidth + 'px';
+	}
+
+	input.addEventListener('keydown', function(event) {
+		var KEY_UP = 38;
+		var KEY_DOWN = 40;
+		var KEY_ENTER = 13;
+
+		// Check if this is a relevant event.
+		if ([KEY_UP, KEY_DOWN, KEY_ENTER].indexOf(event.keyCode) < 0) {
+			return;
+		}
+
+		// If there are no options, ignore.
+		if (options.length == 0) {
+			return;
+		}
+
+		if (event.keyCode == KEY_ENTER) {
+			accept();
+			return
+		}
+
+		switch (event.keyCode) {
+			case KEY_UP:
+				select(selectionIndex - 1);
+				break;
+			case KEY_DOWN:
+				select(selectionIndex + 1);
+				break;
+		}
+
+		renderOptions();
+	});
+
+	function select(index) {
+		selectionIndex = limit(index, -1, options.length - 1);
+		renderOptions();
+	}
+
+	function accept() {
+		input.value = options[selectionIndex];
+		options = [];
+		selectionIndex = -1;
+		renderOptions();
+	}
+
+	list.addEventListener('mouseover', function(event) {
+		var li = event.target;
+		var index = li.dataset.index;
+		select(index);
+	});
+
+	list.addEventListener('click', function(event) {
+		var li = event.target;
+		if (li.tagName.toLowerCase() != 'li') {
+			return;
+		}
+		accept();
+	});
+
 	/*
-	 * Disable the browser's autocompletion feature.
+	 * When anything outside the list is clicked, hide the list.
 	 */
-	$input.attr("autocomplete", "off");
+	document.body.addEventListener('click', function() {
+		options = [];
+		selectionIndex = -1;
+		renderOptions();
+	});
+}
 
 	/*
 	 * Create list element and insert it after the input.
@@ -53,262 +146,24 @@ function buildList($input) {
 	 * but it would cause problems if the input itself was in a
 	 * positioned container (a draggable dialog, for example).
 	 */
-	var $list = $("<div class=\"autocomplete\"></div>");
-	$list.css("position", "absolute");
-	$list.insertAfter($input);
-	$list.css('display', 'none');
 
+
+function onInput(input, func) {
 	/*
-	 * Make sure that the input's and the list's parent has relative or
-	 * absolute positioning.
-	 */
-	var $parent = $list.parent();
-	var pos = $parent.css('position');
-	if (pos != 'absolute' && pos != 'relative') {
-		$parent.css('position', 'relative');
-	}
-
-	return $list;
-}
-
-function initInputEvents(list) {
-	/*
-	 * Save the list variable in a closure.
-	 */
-	function oninput(event) {
-		updateInput(list);
-	}
-
-	/*
-	 * We have to listen for "input" events and react to them.
 	 * As of 2014, significant number of browsers still don't support
-	 * it. For them we have to fall back to listening for "keyup"
-	 * events.
-
-	/*
-	 * If oninput is supported, use it.
+	 * the "input" event. For them we have to fall back to listening for
+	 * the "keyup" event.
 	 */
+
 	var inputEventSupported = ('oninput' in document.createElement('input'));
 	if (inputEventSupported) {
-		list.$input.on("input", oninput);
-		return true;
-	}
-	/*
-	 * Otherwise, do a trick with keyup.
-	 */
-	list.$input.on("keyup", function(event) {
-		if (event.keyCode >= 32 && event.keyCode <= 127) {
-			updateInput(list);
-		}
-	});
-}
-
-/*
- * Gets called whenever the associated input value is changed.
- */
-function updateInput(list) {
-	var MIN_LENGTH = 1;
-
-	var newValue = list.$input.val();
-
-	/* If the value hasn't changed, don't do anything. */
-	if (list.currentValue == newValue) {
-		return;
-	}
-
-	list.prevValue = list.currentValue;
-	list.currentValue = newValue;
-
-	if (list.currentValue < MIN_LENGTH) {
-		hideList(list);
-		return;
-	}
-
-	/*
-	 * Save the list variable in closure and call the suggestions
-	 * function with it.
-	 */
-	var f = function(options, contexts) {
-		showSuggestions(list, options, contexts);
-	}
-	list.func.call(undefined, list.currentValue, f);
-}
-
-function hideList(list) {
-	list.$list.css('display', 'none');
-}
-
-function showSuggestions(list, suggestions, contexts) {
-	var $list = list.$list;
-
-	$list.empty();
-	list.selection = -1;
-	list.contents = suggestions;
-	list.contexts = contexts;
-
-	var container = createItems(suggestions);
-	if (!container) {
-		hideList(list);
-		return;
-	}
-
-	$list.append(container);
-	$list.css('display', 'block');
-	/*
-	 * After we fill the list, we call alignList to update the list
-	 * position. We have to do it every time because in general the page
-	 * layout could change at any time, and not only due to the window
-	 * resize.
-	 */
-	alignList(list);
-}
-
-function createItems(suggestions) {
-	var n = suggestions.length;
-	if (!n) {
-		return null;
-	}
-
-	var container = document.createElement('ul');
-	var s = '';
-	for (var i = 0; i < n; i++) {
-		s += '<li data-index="' + i + '">' + suggestions[i] + '</li>';
-	}
-	container.innerHTML = s;
-	return container;
-}
-
-/*
- * Move list to the correct position relative to the input.
- */
-function alignList(list) {
-	var $input = list.$input;
-	var $list = list.$list;
-
-	var offset = $input.position();
-	var hmargin = $input.outerWidth(true) - $input.outerWidth();
-
-	var left = offset.left + hmargin / 2;
-	/*
-	 * We assume that there is always enough space below the input.
-	 */
-	var top = offset.top + $input.outerHeight();
-
-	$list.css({
-		"left": left + "px",
-		"top": top + "px",
-		"min-width": $input.outerWidth() + "px"
-	})
-}
-
-function initKeyboardEvents(list) {
-	/* Event key codes. */
-	var KEY_UP = 38;
-	var KEY_DOWN = 40;
-	var KEY_ENTER = 13;
-
-	var $input = list.$input;
-	var $list = list.$list;
-
-	$input.on('keydown', onKeyPress);
-
-	/*
-	 * Processes key presses at the list.
-	 */
-	function onKeyPress(event) {
-		if (!$list.is(":visible")) {
-			return;
-		}
-
-		var index = list.selection;
-
-		switch (event.keyCode) {
-			case KEY_UP:
-				selectItem(list, index - 1);
-				break;
-			case KEY_DOWN:
-				selectItem(list, index + 1);
-				break;
-			case KEY_ENTER:
-				acceptItem(list, index);
-				break;
-			default:
-				return;
-		}
-
-		event.preventDefault();
-		event.stopPropagation();
-	}
-}
-
-function selectItem(list, index) {
-	var n = list.contents.length;
-	var $list = list.$list;
-
-	if (!n) {
-		return;
-	}
-
-	if (index < 0) {
-		index = n - 1;
+		input.addEventListener('input', func);
 	} else {
-		index = index % n;
+		input.addEventListener('keyup', function(event) {
+			if (event.keyCode < 32 || event.keyCode > 127) {
+				return;
+			}
+			func.call(this, event);
+		});
 	}
-
-	var $prev = $list.find('li').eq(list.selection);
-	var $next = $list.find('li').eq(index);
-
-	$prev.removeClass('selected');
-	$next.addClass('selected');
-
-	list.selection = index;
-}
-
-function acceptItem(list, index) {
-	var n = list.contents.length;
-	if (index < 0 || index >= n) {
-		return;
-	}
-
-	var item = list.contents[index];
-	list.$input.val(item).trigger("change");
-	hideList(list);
-
-	if (list.acceptCallback) {
-		var context;
-		if (list.contexts) {
-			context = list.contexts[index];
-		} else {
-			context = null;
-		}
-		list.acceptCallback(item, context);
-	}
-}
-
-function initMouseEvents(list) {
-	var $list = list.$list;
-
-	/*
-	 * Update selection when pointed by mouse.
-	 */
-	$list.on('mouseenter', 'li', function(event) {
-		var index = $(this).data('index');
-		selectItem(list, index);
-	});
-
-	/*
-	 * When a list entry is clicked, accept it.
-	 */
-	$list.on("click", 'li', function(event) {
-		var index = $(this).data('index');
-		acceptItem(list, index);
-		event.stopPropagation();
-	});
-
-	/*
-	 * When anything outside the list is clicked, hide the list.
-	 */
-	$("body").on('click', function() {
-		hideList(list);
-	});
 }

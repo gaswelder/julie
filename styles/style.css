@@ -1,3 +1,23 @@
+.ju.autocomplete {
+	
+}
+
+.ju.autocomplete ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	background-color: white;
+	box-shadow: 1px 1px 3px rgba(0.2, 0.2, 0.2, 0.3);
+}
+
+.ju.autocomplete li {
+	padding: 6px;
+}
+
+.ju.autocomplete li.selected {
+	background-color: #eef;
+}
+
 .w-tabs {
 	margin-top: 1em;
 }

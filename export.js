@@ -6,9 +6,11 @@
 import Gallery from "./gallery.js";
 import Tabs from "./tabs.js";
 import Layer from './layer.js';
+import autocomplete from './autocomplete.js';
 
 window.Julie = {
 	Gallery: Gallery,
 	Tabs: Tabs,
-	Layer: Layer
+	Layer: Layer,
+	autocomplete: autocomplete
 };
